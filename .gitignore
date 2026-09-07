@@ -1,0 +1,24 @@
+# Ignorar binarios y compilados
+bin/
+obj/
+
+# Ignorar publicaciones
+publish/
+dist/
+
+# Ignorar configuraciones locales
+*.user
+*.suo
+
+# Ignorar archivos de Visual Studio Code
+.vscode/
+
+# Ignorar dependencias de Node (si algún día agregas)
+node_modules/
+
+# Ignorar archivos temporales
+*.log
+*.tmp
+
+# Ignorar configuraciones de IIS
+*.config
