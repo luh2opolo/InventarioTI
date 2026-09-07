@@ -44,6 +44,8 @@ builder.Services.AddScoped<DeviceService>();
 builder.Services.AddScoped<DeviceTypeService>();
 builder.Services.AddScoped<DynamicFieldService>();
 builder.Services.AddScoped<AssignmentService>();
+builder.Services.AddScoped<BrandService>();
+
 
 // Servicio nuevo para listar dispositivos
 builder.Services.AddScoped<DeviceQueryService>();
