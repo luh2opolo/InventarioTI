@@ -1,7 +1,3 @@
-// Modelo que representa un campo dinámico del dispositivo.
-// Este modelo usa FieldName y FieldType porque así lo requiere
-// DeviceFieldValueService y otros servicios de tu proyecto.
-
 namespace InventarioTI.Models
 {
     public class DynamicField
@@ -16,6 +12,9 @@ namespace InventarioTI.Models
 
         // Relación con DeviceType
         public int DeviceTypeId { get; set; }
-        public DeviceType DeviceType { get; set; } = new DeviceType();
+        public DeviceType DeviceType { get; set; } = null!;
+
+        // Lista de valores asociados a este campo dinámico
+        public List<DeviceFieldValue> FieldValues { get; set; } = new();
     }
 }

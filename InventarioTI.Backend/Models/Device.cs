@@ -15,17 +15,21 @@ namespace InventarioTI.Models
 
         // Relación con la marca
         public int BrandId { get; set; }
-        public Brand Brand { get; set; } = new Brand();
+        public Brand Brand { get; set; } = null!;
 
         // Relación con el tipo de dispositivo
         public int DeviceTypeId { get; set; }
-        public DeviceType DeviceType { get; set; } = new DeviceType();
+        public DeviceType DeviceType { get; set; } = null!;
 
         // Ubicación física del dispositivo
-            public int LocationId { get; set; }
-            public Location Location { get; set; } = new Location();
+        public int LocationId { get; set; }
+        public Location Location { get; set; } = null!;
 
-        // Lista de valores de campos dinámicos
-        public List<DeviceFieldValue> DynamicFields { get; set; } = new List<DeviceFieldValue>();
+        // ============================================================
+        // Lista de valores de campos dinámicos asociados al dispositivo
+        // Esta propiedad es requerida por EF Core para la relación:
+        // Device 1 → N DeviceFieldValue
+        // ============================================================
+        public List<DeviceFieldValue> FieldValues { get; set; } = new();
     }
 }

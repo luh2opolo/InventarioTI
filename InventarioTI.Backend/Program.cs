@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using InventarioTI.Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +23,21 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // ============================================================
 // 🔵 INYECCIÓN DE SERVICIOS (Dependency Injection)
 // ============================================================
-// Todos los servicios del backend se registran aquí para que
-// puedan ser usados en controladores y otros componentes.
-builder.Services.AddScoped<JwtHelper>();
-builder.Services.AddScoped<AuditLogService>();
+// Aquí se registran todos los servicios del backend.
 
+// ⚠️ CORRECCIÓN IMPORTANTE ⚠️
+// JwtHelper necesita un string (la clave secreta).
+// Por eso NO se puede registrar con AddScoped<JwtHelper>().
+// Debemos inyectar la clave manualmente desde appsettings.json.
+builder.Services.AddScoped<JwtHelper>(provider =>
+{
+    var config = provider.GetRequiredService<IConfiguration>();
+    var key = config["Jwt:Key"] ?? "ClaveSuperSecreta123456789";
+    return new JwtHelper(key);
+});
+
+// Servicios del sistema
+builder.Services.AddScoped<AuditLogService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<DeviceService>();
@@ -34,6 +45,10 @@ builder.Services.AddScoped<DeviceTypeService>();
 builder.Services.AddScoped<DynamicFieldService>();
 builder.Services.AddScoped<AssignmentService>();
 
+// Servicio nuevo para listar dispositivos
+builder.Services.AddScoped<DeviceQueryService>();
+
+// Acceso al contexto HTTP
 builder.Services.AddHttpContextAccessor();
 
 // ============================================================
