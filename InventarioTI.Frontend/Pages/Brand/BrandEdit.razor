@@ -1,92 +1,76 @@
 @page "/brands/edit/{id:int}"
 @inject BrandService BrandService
 @inject NavigationManager Nav
-@using InventarioTI.Frontend.Models
 
-<!-- ============================================================
-     BrandEdit.razor
-     Página para editar una marca existente.
-     ============================================================ -->
+<MudPaper Class="pa-6 mx-auto" MaxWidth="500px" Elevation="2">
 
-<MudPaper Class="pa-6" Elevation="2" Style="max-width:500px; margin:auto;">
-    <!-- ✔ max-width controla el ancho -->
-    <!-- ✔ margin:auto centra el formulario -->
-
-    <MudText Typo="Typo.h5" Class="mb-4">Editar marca</MudText>
+    <MudText Typo="Typo.h5" Class="mb-4">Editar Marca</MudText>
 
     <MudForm @ref="form">
 
-        <!-- Campo Nombre (sin asterisco) -->
         <MudTextField Label="Nombre"
-                      @bind-Value="model.Nombre"
-                      Required="false"
-                      HelperText="El nombre es obligatorio" />
+                      @bind-Value="brand.Nombre"
+                      Required="true"
+                      RequiredError="El nombre es obligatorio"
+                      Class="mb-4" />
 
-        <!-- Campo Descripción -->
         <MudTextField Label="Descripción"
-                      @bind-Value="model.Descripcion"
+                      @bind-Value="brand.Descripcion"
                       Lines="3"
-                      Placeholder="Puede quedar en blanco" />
+                      Class="mb-4" />
 
-        <MudSpacer />
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="Guardar"
+                   Class="mr-2">
+            Guardar
+        </MudButton>
 
-        <div style="display:flex; gap:12px; margin-top:20px;">
-            <!-- Botón Guardar -->
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Style="height:40px; flex:1;"
-                       Elevation="3"
-                       OnClick="Guardar">
-                Guardar
-            </MudButton>
-
-            <!-- Botón Cancelar -->
-            <MudButton Variant="Variant.Outlined"
-                       Color="Color.Secondary"
-                       Style="height:40px; flex:1;"
-                       Elevation="1"
-                       OnClick="Cancelar">
-                Cancelar
-            </MudButton>
-        </div>
+        <MudButton Variant="Variant.Outlined"
+                   Color="Color.Secondary"
+                   OnClick="@(() => Nav.NavigateTo("/brands"))">
+            Cancelar
+        </MudButton>
 
     </MudForm>
 
 </MudPaper>
 
 @code {
-
     [Parameter] public int id { get; set; }
 
-    private BrandUpdateDto model = new();
+    private BrandUpdateDto brand = new();
+
+    // MudForm puede ser null hasta que el componente se renderice
     private MudForm? form;
 
     protected override async Task OnInitializedAsync()
     {
-        var brand = await BrandService.GetBrandByIdAsync(id);
+        var data = await BrandService.GetBrandByIdAsync(id);
 
-        if (brand != null)
+        // ✔ Evita CS8602: data puede venir null
+        if (data is null)
         {
-            model.Nombre = brand.Nombre;
-            model.Descripcion = brand.Descripcion ?? string.Empty;
+            Nav.NavigateTo("/brands");
+            return;
         }
+
+        brand.Nombre = data.Nombre;
+        brand.Descripcion = data.Descripcion ?? string.Empty; // ✔ evita null
     }
 
     private async Task Guardar()
     {
-        await form!.ValidateAsync();
-
-        if (string.IsNullOrWhiteSpace(model.Nombre))
+        // ✔ Evita CS8602: validar solo si form ya está inicializado
+        if (form is null)
             return;
 
-        var ok = await BrandService.UpdateBrandAsync(id, model);
+        await form.ValidateAsync();
 
-        if (ok)
-            Nav.NavigateTo("/brands");
-    }
+        if (!form.IsValid)
+            return;
 
-    private void Cancelar()
-    {
+        await BrandService.UpdateBrandAsync(id, brand);
         Nav.NavigateTo("/brands");
     }
 }
