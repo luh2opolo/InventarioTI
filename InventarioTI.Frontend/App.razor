@@ -1,10 +1,5 @@
-﻿@* App.razor
-   Enrutamiento principal del sistema.
-   Eliminamos CascadingAuthenticationState porque NO usamos autenticación.
-*@
-
-@using Microsoft.AspNetCore.Components.Routing
-@using MudBlazor
+﻿@using Microsoft.AspNetCore.Components.Routing
+@using InventarioTI.Frontend.Shared
 
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
@@ -12,6 +7,6 @@
     </Found>
 
     <NotFound>
-        <MudText Typo="Typo.h5">Página no encontrada</MudText>
+        <p>Página no encontrada.</p>
     </NotFound>
 </Router>

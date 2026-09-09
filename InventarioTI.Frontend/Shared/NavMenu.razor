@@ -1,33 +1,31 @@
 @using MudBlazor
 
+<!-- ============================================================
+     NavMenu.razor
+     Menú lateral estilizado con MudBlazor
+     ============================================================ -->
+
 <MudNavMenu>
 
-    <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">
+    <!-- Dashboard -->
+    <MudNavLink Href="/"
+                Icon="@Icons.Material.Filled.Home"
+                Class="mud-nav-link">
         Dashboard
     </MudNavLink>
 
-    <MudNavLink Href="/devices" Icon="@Icons.Material.Filled.Devices">
+    <!-- Dispositivos -->
+    <MudNavLink Href="/devices"
+                Icon="@Icons.Material.Filled.Devices"
+                Class="mud-nav-link">
         Dispositivos
     </MudNavLink>
 
-    <MudNavLink Href="/brands" Icon="@Icons.Material.Filled.List">
+    <!-- Marcas -->
+    <MudNavLink Href="/brands"
+                Icon="@Icons.Material.Filled.List"
+                Class="mud-nav-link">
         Marcas
-    </MudNavLink>
-
-    <MudNavLink Href="/types" Icon="@Icons.Material.Filled.Category">
-        Tipos
-    </MudNavLink>
-
-    <MudNavLink Href="/assignments" Icon="@Icons.Material.Filled.Assignment">
-        Asignaciones
-    </MudNavLink>
-
-    <MudNavLink Href="/audit" Icon="@Icons.Material.Filled.History">
-        Auditoría
-    </MudNavLink>
-
-    <MudNavLink Href="/users" Icon="@Icons.Material.Filled.People">
-        Usuarios
     </MudNavLink>
 
 </MudNavMenu>

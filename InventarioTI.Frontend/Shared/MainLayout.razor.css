@@ -1,37 +1,56 @@
-/* 
-    Estilos del layout principal.
-    NO se mezcla CSS dentro del .razor.
-    Todo está separado para mantener orden y escalabilidad.
-*/
+/* ============================================================
+   Estilos del layout principal y del menú lateral
+   ============================================================ */
 
 /* Sidebar */
 .sidebar-container {
   width: 260px;
-  background-color: #1e1e2f;
-  color: white;
+  border-right: 1px solid #e0e0e0;
+  padding-top: 20px;
+  background-color: #ffffff;
 }
 
-/* Header */
+/* AppBar */
 .header-container {
-  background-color: #27293d;
+  height: 64px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #1976d2;
   color: white;
-  padding-left: 20px;
 }
 
 /* Contenido principal */
 .main-content {
-  padding: 20px;
-  background-color: #f5f6fa;
+  padding: 30px;
+  background-color: #f5f7fa;
   min-height: calc(100vh - 64px);
 }
 
-/* Estilos del menú lateral */
+/* ============================================================
+   Estilos del menú lateral (NavMenu)
+   ============================================================ */
 
+/* Enlaces del menú */
 .mud-nav-link {
-  font-size: 15px;
+  font-size: 16px;
   padding: 12px 20px;
+  border-radius: 8px;
+  margin: 4px 0;
+  color: #212121;
+  display: flex;
+  align-items: center;
+  gap: 12px; /* separa icono y texto */
 }
 
+/* Hover elegante */
 .mud-nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(25, 118, 210, 0.1);
+}
+
+/* Iconos del menú */
+.mud-nav-link .mud-icon-root {
+  font-size: 22px; /* tamaño del icono */
+  color: #1976d2; /* color corporativo */
 }

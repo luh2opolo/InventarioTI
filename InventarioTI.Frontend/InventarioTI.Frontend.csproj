@@ -4,6 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- ESTA LÍNEA ES LA CLAVE -->
+    <RootNamespace>InventarioTI.Frontend</RootNamespace>
+    <AssemblyName>InventarioTI.Frontend</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

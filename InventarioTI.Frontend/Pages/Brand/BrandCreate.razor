@@ -1,0 +1,72 @@
+@page "/brands/create"
+@inject BrandService BrandService
+@inject NavigationManager Nav
+
+<MudPaper Class="pa-6" Elevation="2">
+
+    <MudText Typo="Typo.h5" Class="mb-4">Nueva marca</MudText>
+
+    <MudForm @ref="form">
+
+        <!-- Campo: Nombre -->
+        <MudTextField Label="Nombre*"
+                      @bind-Value="model.Nombre"
+                      Required="true"
+                      RequiredError="El nombre es obligatorio" />
+
+        <!-- Campo: Descripción -->
+        <MudTextField Label="Descripción"
+                      @bind-Value="model.Descripcion"
+                      Lines="3" />
+
+        <MudSpacer />
+
+        <!-- Botones -->
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="Guardar">
+            GUARDAR
+        </MudButton>
+
+        <MudButton Variant="Variant.Outlined"
+                   Color="Color.Default"
+                   Class="ml-2"
+                   OnClick="Cancelar">
+            CANCELAR
+        </MudButton>
+
+    </MudForm>
+
+</MudPaper>
+
+@code {
+
+    // Modelo del formulario
+    private BrandCreateDto model = new();
+
+    // MudForm puede ser null hasta que MudBlazor lo inicialice
+    private MudForm? form;
+
+    // Acción: Guardar marca
+    private async Task Guardar()
+    {
+        // Validate() está obsoleto → usar ValidateAsync()
+        await form!.ValidateAsync();
+
+        if (!form.IsValid)
+            return;
+
+        var ok = await BrandService.CreateBrandAsync(model);
+
+        if (ok)
+            Nav.NavigateTo("/brands");
+        else
+            Console.WriteLine("Error al guardar la marca.");
+    }
+
+    // Acción: Cancelar
+    private void Cancelar()
+    {
+        Nav.NavigateTo("/brands");
+    }
+}

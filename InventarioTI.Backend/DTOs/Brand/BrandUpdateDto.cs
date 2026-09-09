@@ -1,10 +1,9 @@
-// DTO usado para actualizar una marca existente.
-// Se inicializa Name para evitar advertencias de nulabilidad.
-
 namespace InventarioTI.DTOs.Brand
 {
+    // DTO usado para actualizar una marca existente
     public class BrandUpdateDto
     {
-        public required string Name { get; set; } = "";
+        public string Nombre { get; set; } = "";
+        public string Descripcion { get; set; } = "";
     }
 }

@@ -1,10 +1,9 @@
-// DTO usado para crear una nueva marca.
-// Se inicializa Name para evitar advertencias de nulabilidad.
-
 namespace InventarioTI.DTOs.Brand
 {
+    // DTO usado para crear una nueva marca
     public class BrandCreateDto
     {
-        public required string Name { get; set; } = "";
+        public string Nombre { get; set; } = "";
+        public string Descripcion { get; set; } = "";
     }
 }

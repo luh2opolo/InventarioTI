@@ -1,0 +1,45 @@
+@page "/brands"
+@inject BrandService BrandService
+@inject NavigationManager Nav
+
+<!-- ============================================================
+     BrandList.razor
+     Listado de marcas
+     ============================================================ -->
+
+<MudPaper Class="pa-6" Elevation="2">
+
+    <MudText Typo="Typo.h5" Class="mb-4">Listado de marcas</MudText>
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               Class="mb-4"
+               OnClick="@(() => Nav.NavigateTo("/brands/create"))">
+        NUEVA MARCA
+    </MudButton>
+
+    <MudTable Items="brands">
+
+        <HeaderContent>
+            <MudTh>Nombre</MudTh>
+            <MudTh>Descripción</MudTh>
+        </HeaderContent>
+
+        <RowTemplate>
+            <MudTd>@context.Nombre</MudTd>
+            <MudTd>@context.Descripcion</MudTd>
+        </RowTemplate>
+
+    </MudTable>
+
+</MudPaper>
+
+@code {
+
+    private List<BrandDto> brands = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        brands = await BrandService.GetBrandsAsync();
+    }
+}

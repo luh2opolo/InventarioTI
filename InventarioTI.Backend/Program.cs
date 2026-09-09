@@ -1,18 +1,18 @@
 using InventarioTI.Data;
 using InventarioTI.Helpers;
 using InventarioTI.Services;
+using InventarioTI.Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using InventarioTI.Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ============================================================
-// 🔵 CONFIGURACIÓN DE BASE DE DATOS
-// ============================================================
+/* ============================================================
+   🔵 CONFIGURACIÓN DE BASE DE DATOS
+   ============================================================ */
 // Registra el DbContext y conecta a SQL Server usando la cadena
 // de conexión definida en appsettings.json.
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -20,15 +20,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-// ============================================================
-// 🔵 INYECCIÓN DE SERVICIOS (Dependency Injection)
-// ============================================================
-// Aquí se registran todos los servicios del backend.
-
-// ⚠️ CORRECCIÓN IMPORTANTE ⚠️
-// JwtHelper necesita un string (la clave secreta).
-// Por eso NO se puede registrar con AddScoped<JwtHelper>().
-// Debemos inyectar la clave manualmente desde appsettings.json.
+/* ============================================================
+   🔵 INYECCIÓN DE SERVICIOS (Dependency Injection)
+   ============================================================ */
+// JwtHelper requiere la clave secreta, por eso se inyecta manualmente.
 builder.Services.AddScoped<JwtHelper>(provider =>
 {
     var config = provider.GetRequiredService<IConfiguration>();
@@ -44,20 +39,16 @@ builder.Services.AddScoped<DeviceService>();
 builder.Services.AddScoped<DeviceTypeService>();
 builder.Services.AddScoped<DynamicFieldService>();
 builder.Services.AddScoped<AssignmentService>();
-builder.Services.AddScoped<BrandService>();
-
-
-// Servicio nuevo para listar dispositivos
-builder.Services.AddScoped<DeviceQueryService>();
+builder.Services.AddScoped<BrandService>();          // Servicio de marcas
+builder.Services.AddScoped<DeviceQueryService>();    // Servicio de consultas de dispositivos
 
 // Acceso al contexto HTTP
 builder.Services.AddHttpContextAccessor();
 
-// ============================================================
-// 🔵 CONFIGURACIÓN DE AUTENTICACIÓN JWT
-// ============================================================
+/* ============================================================
+   🔵 CONFIGURACIÓN DE AUTENTICACIÓN JWT
+   ============================================================ */
 // Se obtiene la clave secreta desde appsettings.json.
-// Si no existe, se usa una clave por defecto.
 var secretKey = builder.Configuration["Jwt:Key"] ?? "ClaveSuperSecreta123456789";
 
 // Convertir clave a bytes para generar la firma del token.
@@ -74,28 +65,41 @@ builder.Services.AddAuthentication(options =>
     // Validación del token JWT.
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = false, // No usamos issuer.
-        ValidateAudience = false, // No usamos audience.
-        ValidateLifetime = true, // Validar expiración del token.
-        ValidateIssuerSigningKey = true, // Validar firma.
+        ValidateIssuer = false,            // No usamos issuer.
+        ValidateAudience = false,          // No usamos audience.
+        ValidateLifetime = true,           // Validar expiración del token.
+        ValidateIssuerSigningKey = true,   // Validar firma.
         IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
     };
 });
 
-// ============================================================
-// 🔵 CONFIGURACIÓN DE AUTORIZACIÓN
-// ============================================================
+/* ============================================================
+   🔵 CONFIGURACIÓN DE AUTORIZACIÓN
+   ============================================================ */
 // Permite usar [Authorize] y roles en controladores.
 builder.Services.AddAuthorization();
 
-// ============================================================
-// 🔵 CONFIGURACIÓN DE SWAGGER (Documentación de API)
-// ============================================================
-// ⚠️ ESTA LÍNEA ES CRÍTICA ⚠️
-// Sin esto, Swagger NO se publica en producción ni en IIS.
+/* ============================================================
+   🔵 CONFIGURACIÓN DE CORS (CRÍTICO PARA EL FRONTEND)
+   ============================================================ */
+// Permite que el frontend (localhost:5296) llame a la API (localhost:5139).
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:5296")   // URL del frontend
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
+/* ============================================================
+   🔵 CONFIGURACIÓN DE SWAGGER (Documentación de API)
+   ============================================================ */
+// Swagger siempre activo (importante para IIS y producción).
 builder.Services.AddEndpointsApiExplorer();
 
-// Configuración completa de Swagger.
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -131,37 +135,39 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// ============================================================
-// 🔵 CONTROLADORES
-// ============================================================
+/* ============================================================
+   🔵 CONTROLADORES
+   ============================================================ */
 // Registra los controladores para que la API funcione.
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// ============================================================
-// 🔵 SWAGGER (SIEMPRE ACTIVADO)
-// ============================================================
-// Esto permite que Swagger funcione en producción e IIS.
-// Si lo dejás dentro de "IsDevelopment()", NO funciona en IIS.
+/* ============================================================
+   🔵 SWAGGER (SIEMPRE ACTIVADO)
+   ============================================================ */
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// ============================================================
-// 🔵 MIDDLEWARE DE AUTENTICACIÓN Y AUTORIZACIÓN
-// ============================================================
-// Deben ir en este orden para que JWT funcione correctamente.
+/* ============================================================
+   🔵 MIDDLEWARE DE CORS
+   ============================================================ */
+// Debe ir ANTES de Authentication y Authorization.
+app.UseCors("FrontendPolicy");
+
+/* ============================================================
+   🔵 MIDDLEWARE DE AUTENTICACIÓN Y AUTORIZACIÓN
+   ============================================================ */
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ============================================================
-// 🔵 ENDPOINTS
-// ============================================================
+/* ============================================================
+   🔵 ENDPOINTS
+   ============================================================ */
 // Registra todos los controladores automáticamente.
 app.MapControllers();
 
-// ============================================================
-// 🔵 EJECUTAR APP
-// ============================================================
-// Inicia la aplicación.
+/* ============================================================
+   🔵 EJECUTAR APP
+   ============================================================ */
 app.Run();

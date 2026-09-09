@@ -1,18 +1,11 @@
-// Program.cs
-// Archivo principal de configuración del proyecto Blazor WebAssembly (Frontend).
-// Aquí se inicializa MudBlazor y el HttpClient que apunta a tu API backend.
-
 using System;
 using System.Net.Http;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-// IMPORTANTE:
-// Este using permite que Program.cs encuentre el componente App.razor.
-// Sin esto aparece el error CS0246: 'App' no se encontró.
 using InventarioTI.Frontend;
+using InventarioTI.Frontend.Services;
 
-// MudBlazor: servicios de UI modernos
 using MudBlazor.Services;
 
 namespace InventarioTI.Frontend
@@ -21,22 +14,23 @@ namespace InventarioTI.Frontend
     {
         public static async Task Main(string[] args)
         {
-            // Crear host de Blazor WebAssembly
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-            // Registrar el componente raíz de la aplicación (App.razor)
+            // Componente raíz
             builder.RootComponents.Add<App>("#app");
 
-            // Activar MudBlazor
+            // MudBlazor
             builder.Services.AddMudServices();
 
-            // Registrar HttpClient para consumir tu API backend
+            // Servicios propios
+            builder.Services.AddScoped<BrandService>();
+
+            // HttpClient apuntando al BACKEND (CORRECTO)
             builder.Services.AddScoped(sp => new HttpClient
             {
-                BaseAddress = new Uri("http://localhost:5000/")
+                BaseAddress = new Uri("http://localhost:5139/")
             });
 
-            // Ejecutar la aplicación
             await builder.Build().RunAsync();
         }
     }
