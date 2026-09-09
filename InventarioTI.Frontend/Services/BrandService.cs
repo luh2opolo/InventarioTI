@@ -1,17 +1,19 @@
 using System.Net.Http.Json;
-using InventarioTI.Frontend.Models;
+using InventarioTI.Frontend.Models;   // ✔ Aquí están BrandDto, BrandCreateDto y BrandUpdateDto
 
 namespace InventarioTI.Frontend.Services;
 
 /* ============================================================
    BrandService.cs
    Servicio encargado de consumir la API de marcas.
+   Este servicio se comunica con el backend mediante HTTP.
    ============================================================ */
 
 public class BrandService
 {
     private readonly HttpClient _http;
 
+    // Constructor: recibe HttpClient inyectado por Blazor
     public BrandService(HttpClient http)
     {
         _http = http;
@@ -20,9 +22,9 @@ public class BrandService
     /* ============================================================
        🔵 OBTENER LISTADO DE MARCAS
        ============================================================
-       - GetFromJsonAsync puede devolver null si el backend falla.
-       - Para evitar la advertencia CS8603, devolvemos una lista vacía
-         cuando el resultado sea null.
+       - Llama al endpoint GET /api/brands
+       - Devuelve una lista de BrandDto
+       - Si la API falla, devolvemos una lista vacía para evitar null
        ============================================================ */
     public async Task<List<BrandDto>> GetBrandsAsync()
     {
@@ -34,10 +36,24 @@ public class BrandService
     }
 
     /* ============================================================
+       🔵 OBTENER UNA MARCA POR ID
+       ============================================================
+       - Necesario para cargar datos en BrandEdit.razor
+       - Llama al endpoint GET /api/brands/{id}
+       ============================================================ */
+    public async Task<BrandDto?> GetBrandByIdAsync(int id)
+    {
+        return await _http.GetFromJsonAsync<BrandDto>(
+            $"http://localhost:5139/api/brands/{id}"
+        );
+    }
+
+    /* ============================================================
        🔵 CREAR UNA NUEVA MARCA
        ============================================================
-       - PostAsJsonAsync nunca devuelve null, pero sí puede fallar.
-       - Se devuelve true/false según el código HTTP.
+       - Envía un POST a /api/brands
+       - El backend espera BrandCreateDto
+       - Se devuelve true/false según el código HTTP
        ============================================================ */
     public async Task<bool> CreateBrandAsync(BrandCreateDto dto)
     {
@@ -46,6 +62,23 @@ public class BrandService
             dto
         );
 
-        return response.IsSuccessStatusCode;     // ✔ Limpio y seguro
+        return response.IsSuccessStatusCode;
+    }
+
+    /* ============================================================
+       🔵 ACTUALIZAR UNA MARCA
+       ============================================================
+       - Envía un PUT a /api/brands/{id}
+       - El backend espera BrandUpdateDto
+       - Se devuelve true/false según el código HTTP
+       ============================================================ */
+    public async Task<bool> UpdateBrandAsync(int id, BrandUpdateDto dto)
+    {
+        var response = await _http.PutAsJsonAsync(
+            $"http://localhost:5139/api/brands/{id}",
+            dto
+        );
+
+        return response.IsSuccessStatusCode;
     }
 }

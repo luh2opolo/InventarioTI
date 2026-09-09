@@ -4,13 +4,14 @@
 
 <!-- ============================================================
      BrandList.razor
-     Listado de marcas
+     Listado de marcas con botón para editar.
      ============================================================ -->
 
 <MudPaper Class="pa-6" Elevation="2">
 
     <MudText Typo="Typo.h5" Class="mb-4">Listado de marcas</MudText>
 
+    <!-- Botón para crear nueva marca -->
     <MudButton Variant="Variant.Filled"
                Color="Color.Primary"
                Class="mb-4"
@@ -18,16 +19,27 @@
         NUEVA MARCA
     </MudButton>
 
+    <!-- Tabla de marcas -->
     <MudTable Items="brands">
 
         <HeaderContent>
             <MudTh>Nombre</MudTh>
             <MudTh>Descripción</MudTh>
+            <MudTh>Acciones</MudTh>
         </HeaderContent>
 
         <RowTemplate>
             <MudTd>@context.Nombre</MudTd>
             <MudTd>@context.Descripcion</MudTd>
+
+            <!-- Botón Editar -->
+            <MudTd>
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Info"
+                           OnClick="@(() => Nav.NavigateTo($"/brands/edit/{context.Id}"))">
+                    Editar
+                </MudButton>
+            </MudTd>
         </RowTemplate>
 
     </MudTable>
